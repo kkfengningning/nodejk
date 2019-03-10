@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>伯虎后台管理</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="/dist/css/skins/skin-blue.min.css">
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+  <div class="wrapper">
+    <!-- 头部引入 -->
+    <%- include('./main-header.ejs') %>
+    <!-- 左边导航栏引入 -->
+    <%- include('./main-slider.ejs') %>
+    <!-- 右边控制栏引入 -->
+    <%- include('./main-control.ejs') %>
+
+
+    <!-- 主体 -->
+    <div class="content-wrapper">
+      <!-- 主体标题区 -->
+      <section class="content-header">
+        <h1>
+          首页热门商品管理
+          <!-- <small>后台首页</small> -->
+        </h1>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
+          <li class="active">产品管理</li>
+          <li class="active">热门商品</li>
+        </ol>
+      </section>
+
+      <!-- 主体内容区 -->
+      <section class="content">
+
+        <div class="box">
+          <!-- 表格头 -->
+          <div class="box-header with-border">
+            <h3 class="box-title  pull-left">
+              <% for(var i=0;i<brandNames.length;i++){ %>
+              <a href="/product/hot/brandName?brandName=<%- brandNames[i] %>">
+                <button class="btn btn-md btn-sm">
+                    <%- brandNames[i] %>
+                </button>
+              </a>
+              <% } %>
+            </h3>
+            <div class="pull-right">
+              <!-- 排序 -->
+              <a href="/product/hot/sort?type=minPrice&key=1">
+                <button class="btn btn-sm btn-link ">
+                  <span class="glyphicon glyphicon-sort-by-attributes"></span>升序排列
+                </button>
+              </a>
+
+              <a href="/product/hot/sort?type=minPrice&key=-1">
+                <button class="btn btn-sm btn-link ">
+                  <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>降序排列
+                </button>
+              </a>
+
+            </div>
+
+            <!-- 表格体 -->
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th class="text-center">序号</th>
+                    <th class="text-center">产品ID</th>
+                    <th class="text-center">产品名称</th>
+                    <th class="text-center">产品价格</th>
+                    <th class="text-center">操作</th>
+                  </tr>
+                  <!-- 商品列表 -->
+                  <% for(var i=0;i<data.length;i++){ %>
+                  <tr class="text-center">
+                    <td class="col-md-1">
+                      <%- i+1 %>
+                    </td>
+                    <td class="col-md-2">
+                      <%- data[i].id %>
+                    </td>
+                    <td class="col-md-5">
+                      <%- data[i].name %>
+                    </td>
+                    <td class="col-md-2">
+                      <%- data[i].minPrice %>
+                    </td>
+                    <td class="col-md-2">
+                      <button type="button" class="btn btn-warning btn-sm" onclick="editModal('<%- data[i].id %>','<%- data[i].minPrice %>')">编辑</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="del('<%- data[i].id %>')">删除</button>
+                    </td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="box-footer clearfix">
+              <!-- 设置每页显示数据数量 -->
+              <div class="pull-left">
+                每页显示<input type="text" value="<%- dataNum %>" id="datanumber" style="width:30px;border-radius:4px;text-align: center;"
+                  onchange="getDataNum()">条数据
+              </div>
+              <!-- 分页 -->
+              <ul class="pagination pagination-sm no-margin pull-right">
+                <li><a href="/product/hot?pageCode=<%- pageCode-1 %>&&dataNum=<%- dataNum %>">«</a></li>
+                <% for (var i=0;i<totalPage;i++){ %>
+                <li class="<%- pageCode==i+1?'active':'' %>"><a href="/product/hot?pageCode=<%- i+1 %>&&dataNum=<%- dataNum %>">
+                    <%- i+1 %></a></li>
+                <% } %>
+                <li><a href="/product/hot?pageCode=<%- pageCode+1 %>&&dataNum=<%- dataNum %>">»</a></li>
+              </ul>
+            </div>
+          </div>
+
+      </section>
+    </div>
+
+    <!-- 底部信息引入 -->
+    <%- include('./main-footer.ejs') %>
+  </div>
+
+  <!-- ---------------------------模态框==修改------------------------- -->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="box box-info" style="width:45%;margin:0 auto;top:25%;">
+      <div class="box-header with-border">
+        <h3 class="box-title">修改商品价格---<span id="editId"></span></h3>
+      </div>
+      <form class="form-horizontal" action="/product/hot/editAction" method="post">
+        <div class="box-body">
+          <div class="form-group" hidden>
+            <label for="proid" class="col-sm-2 control-label">ID</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="proid" id="proid" placeholder="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="oldPrice" class="col-sm-2 control-label">原价格</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="oldPrice" id="oldPrice" readonly placeholder="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newPrice" class="col-sm-2 control-label">新价格</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="newPrice" id="newPrice" placeholder="请输入新价格">
+            </div>
+          </div>
+        </div>
+        <div class="box-footer">
+          <button type="submit" class="btn btn-info pull-right">修改</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ---------------------------模态框==删除------------------------- -->
+  <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="box box-info" style="width:45%;margin:0 auto;top:25%;">
+      <div class="box-header with-border">
+        <h3 class="box-title">删除---<span id="delId"></span></h3>
+      </div>
+      <div class="box-body with-border">
+        <h3>删除之后不可恢复，是否确认删除？</h3>
+      </div>
+      <div class="box-footer">
+        <a id="delBtn" href="/product/hot/del?id=">
+          <button type="submit" class="btn btn-info pull-right">确认</button>
+        </a>
+      </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+  <script src="/plugins/jQuery/jquery-2.2.3.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/dist/js/app.min.js"></script>
+</body>
+<script>
+  //修改价格
+  function editModal(proid, oldPrice) {
+    $('#editModal').modal();
+    $('#editId').text(proid);
+    $('#oldPrice').val(oldPrice)
+    $('#proid').val(proid);
+  }
+  //修改每页显示多少数据
+  function getDataNum() {
+    window.location.href = "/product/hot?pageCode=1&&dataNum=" + $("#datanumber").val();
+  }
+  //删除数据
+  function del(delid) {
+    $('#delModal').modal();
+    $("#delId").text(delid);
+    $('#delBtn').attr({
+      "href": "/product/hot/del?id=" + delid
+    })
+
+  }
+</script>
+
+</html>

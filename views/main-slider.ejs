@@ -1,0 +1,40 @@
+<aside class="main-sidebar">
+  <!-- 侧边栏 -->
+  <section class="sidebar">
+    <!-- 搜索表单 -->
+    <form action="#" method="get" class="sidebar-form">
+      <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="搜索...">
+        <span class="input-group-btn">
+          <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+          </button>
+        </span>
+      </div>
+    </form>
+
+    <!-- 侧边栏菜单 -->
+    <ul class="sidebar-menu">
+      <!-- 表头 -->
+      <li class="header">管理菜单</li>
+      <!-- 菜单列表 -->
+      <li class="<%= activeIndex==1?'active':'' %>"><a href="/"><i class="fa fa-link"></i> <span>主页</span></a></li>
+      <li class="<%= activeIndex==2?'active':'' %>"><a href="/users"><i class="fa fa-link"></i> <span>用户管理</span></a></li>
+      <li class="<%= activeIndex==3?'active':'' %>"><a href="/banner"><i class="fa fa-link"></i> <span>轮播图管理</span></a></li>
+      <li class="treeview <%= activeIndex==4?'active':'' %>">
+        <a href="javascript:;"><i class="fa fa-link"></i> <span>产品管理</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu menu-open" style="display: block;">
+          <li><a href="/product/search">搜索提示框</a></li>
+          <li><a href="/product/tuijian">编辑推荐</a></li>
+          <li><a href="/product/hot">热门商品</a></li>
+          <li><a href="/product/shuma">数码影音</a></li>
+          <li><a href="/product/zhoubian">IP周边</a></li>
+          <li><a href="/product/baopin">热销爆品</a></li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+</aside>
